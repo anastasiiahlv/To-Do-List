@@ -15,11 +15,10 @@ socket.addEventListener('error', function (event) {
     console.error("WebSocket error:", event);
 });
 
-
 let todo = JSON.parse(localStorage.getItem("todo")) || [];
 const todoInput = document.getElementById("todoInput");
 const todoList = document.getElementById("todoList");
-const todoCount = document.getElementById("todoCount");
+const taskCount = document.getElementById("taskCount");
 const addButton = document.querySelector(".btn");
 const deleteButton = document.getElementById("deleteButton");
 
@@ -35,14 +34,14 @@ document.addEventListener("DOMContentLoaded", function () {
     displayTasks();
 
     const sortable = new Sortable(todoList, {
-        animation: 150,
+        animation: 200,
         onEnd: function () {
-            updateTodoOrder();
+            reorderTasks();
         }
     });
 });
 
-function addTask() {
+function addNewTask() {
     const newTask = todoInput.value.trim();
     if (newTask !== "") {
         const task = { text: newTask, disabled: false };
@@ -68,7 +67,7 @@ function displayTasks() {
         p.querySelector(".todo-checkbox").addEventListener("change", () => toggleTask(index));
         todoList.appendChild(p);
     });
-    todoCount.textContent = todo.length;
+    taskCount.textContent = todo.length;
 }
 
 function editTask(index) {
@@ -109,14 +108,14 @@ function saveToLocalStorage() {
     localStorage.setItem("todo", JSON.stringify(todo));
 }
 
-function updateTodoOrder() {
-  const newOrder = [];
+function reorderTasks() {
+  const updatedOrder = [];
   document.querySelectorAll('.todo-item').forEach((item, index) => {
       const text = item.querySelector('p').textContent;
       const isChecked = item.querySelector('.todo-checkbox').checked;
-      newOrder.push({ text, disabled: isChecked });
+      updatedOrder.push({ text, disabled: isChecked });
   });
-  todo = newOrder;
+  todo = updatedOrder;
   saveToLocalStorage();
-  sendTask('reorder', newOrder); 
+  sendTask('reorder', updatedOrder); 
 }
